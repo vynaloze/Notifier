@@ -9,7 +9,7 @@ fun pushNotification(title: String) {
             .setSmallIcon(R.drawable.navigation_empty_icon) //todo
             .setContentTitle(title)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setTimeoutAfter(1000)
+            .setTimeoutAfter(1000) //does not work... :/ todo try with .cancel(id)
 
     val uniqueId = (Date().time / 1000L % Integer.MAX_VALUE).toInt()
     with(NotificationManagerCompat.from(ApplicationContextProvider.getContext())) {
