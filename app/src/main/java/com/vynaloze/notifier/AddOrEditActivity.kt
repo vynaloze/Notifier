@@ -11,40 +11,54 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_add_or_edit.*
 
 class AddOrEditActivity : AppCompatActivity() {
+    private val TAG = "AddOrEdit"
     private val MAX_PERIODS: Int = 3
+    private var oldReminder: Reminder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_or_edit)
-
         preparePeriodListView()
         loadOldReminder()
     }
 
     fun save(view: View) {
-        val title = edit_title.text.toString()
-        if (title.isBlank()) {
-            Toast.makeText(this, "Title must not be null", Toast.LENGTH_SHORT).show()
-            return
+        val reminder = parse() ?: return
+        oldReminder?.active = false
+//        ReminderDao.upsert(reminder)
+        if (oldReminder != null) {
+            ReminderDao.delete(oldReminder!!)
         }
-        val periods = mutableListOf<Int>()
-        for (i in 0 until MAX_PERIODS) {
-            val e = edit_periods.getChildAt(i) as EditText
-            Log.i("AorE", e.text.toString())
-            periods.add(e.text.toString().toIntOrNull() ?: break)
-        }
-        if (periods.size == 0) {
-            Toast.makeText(this, "Please add at least one period", Toast.LENGTH_SHORT).show()
-            return
-        }
-        val reminder = Reminder(title, periods)
-        Log.i("AorE", "Saved $reminder")
-
+        ReminderDao.insert(reminder)
+        Log.i(TAG, "Saved $reminder")
         finish()
     }
 
     fun delete(view: View) {
-        TODO()
+        val reminder = parse() ?: return
+        oldReminder?.active = false
+        ReminderDao.delete(reminder)
+        Log.i(TAG, "Deleted $reminder")
+        finish()
+    }
+
+    private fun parse(): Reminder? {
+        val title = edit_title.text.toString()
+        if (title.isBlank()) {
+            Toast.makeText(this, "Title must not be null", Toast.LENGTH_SHORT).show()
+            return null
+        }
+        val periods = mutableListOf<Int>()
+        for (i in 0 until MAX_PERIODS) {
+            val e = edit_periods.getChildAt(i) as EditText
+            Log.i(TAG, e.text.toString())
+            periods.add(e.text.toString().toIntOrNull() ?: break)
+        }
+        if (periods.size == 0) {
+            Toast.makeText(this, "Please add at least one period", Toast.LENGTH_SHORT).show()
+            return null
+        }
+        return ReminderDao.get(title, periods) ?: Reminder(title, periods)
     }
 
     private fun preparePeriodListView() {
@@ -57,13 +71,13 @@ class AddOrEditActivity : AppCompatActivity() {
     }
 
     private fun loadOldReminder() {
-        val reminder = intent.getSerializableExtra(Reminder::class.simpleName) as? Reminder
+        oldReminder = intent.getSerializableExtra(Reminder::class.simpleName) as? Reminder
                 ?: return
-        edit_title.setText(reminder.title)
+        edit_title.setText(oldReminder!!.title)
         for (i in 0 until MAX_PERIODS) {
-            if (i >= reminder.periods.size) return
+            if (i >= oldReminder!!.periods.size) return
             val e = edit_periods.getChildAt(i) as EditText
-            e.setText(reminder.periods[i].toString())
+            e.setText(oldReminder!!.periods[i].toString())
         }
     }
 }
