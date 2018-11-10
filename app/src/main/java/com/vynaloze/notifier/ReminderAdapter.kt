@@ -17,7 +17,7 @@ class ReminderAdapter(val context: Context) : BaseAdapter() {
 
         val reminder = getItem(position) as Reminder
         rowView.reminder_title.text = reminder.title
-        rowView.reminder_details.text = reminder.periods.toString()
+        rowView.reminder_details.text = "${reminder.desc} - ${reminder.periods}"
         rowView.reminder_switch.isChecked = reminder.active
         rowView.reminder_switch.setOnCheckedChangeListener { _, isChecked ->
             reminder.active = isChecked

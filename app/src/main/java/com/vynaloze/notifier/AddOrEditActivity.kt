@@ -24,22 +24,25 @@ class AddOrEditActivity : AppCompatActivity() {
 
     fun save(view: View) {
         val reminder = parse() ?: return
-        oldReminder?.active = false
-//        ReminderDao.upsert(reminder)
-        if (oldReminder != null) {
-            ReminderDao.delete(oldReminder!!)
-        }
+        deleteIfPresent()
         ReminderDao.insert(reminder)
         Log.i(TAG, "Saved $reminder")
+        Log.i(TAG, "Current state: ${ReminderDao.getAll()}")
         finish()
     }
 
     fun delete(view: View) {
-        val reminder = parse() ?: return
-        oldReminder?.active = false
-        ReminderDao.delete(reminder)
-        Log.i(TAG, "Deleted $reminder")
+        deleteIfPresent()
+        Log.i(TAG, "Current state: ${ReminderDao.getAll()}")
         finish()
+    }
+
+    private fun deleteIfPresent() {
+        if (oldReminder != null) {
+            Log.i(TAG, "Deleted $oldReminder")
+            //            oldReminder?.active = false
+            ReminderDao.delete(oldReminder!!)
+        }
     }
 
     private fun parse(): Reminder? {
@@ -48,17 +51,17 @@ class AddOrEditActivity : AppCompatActivity() {
             Toast.makeText(this, "Title must not be null", Toast.LENGTH_SHORT).show()
             return null
         }
+        val desc = edit_desc.text.toString()
         val periods = mutableListOf<Int>()
         for (i in 0 until MAX_PERIODS) {
             val e = edit_periods.getChildAt(i) as EditText
-            Log.i(TAG, e.text.toString())
             periods.add(e.text.toString().toIntOrNull() ?: break)
         }
         if (periods.size == 0) {
             Toast.makeText(this, "Please add at least one period", Toast.LENGTH_SHORT).show()
             return null
         }
-        return ReminderDao.get(title, periods) ?: Reminder(title, periods)
+        return Reminder(title, desc, periods)
     }
 
     private fun preparePeriodListView() {

@@ -22,6 +22,13 @@
         <requestFocus />
     </EditText>
 
+    <EditText
+        android:id="@+id/edit_desc"
+        android:hint="description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,6 +40,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" />
+
+    <!--todo buttons in better place-->
 
     <Button
         android:id="@+id/save_edit"
