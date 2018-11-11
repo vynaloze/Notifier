@@ -27,6 +27,10 @@ object ReminderDao {
         return cache
     }
 
+    fun getById(id: UUID): Reminder? {
+        return cache.firstOrNull { reminder -> reminder.id == id }
+    }
+
     fun insert(reminder: Reminder) {
         cache.add(reminder)
         appendToFile(reminder)

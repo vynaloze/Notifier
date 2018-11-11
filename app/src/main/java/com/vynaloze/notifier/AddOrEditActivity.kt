@@ -26,6 +26,7 @@ class AddOrEditActivity : AppCompatActivity() {
         val reminder = parse() ?: return
         deleteIfPresent()
         ReminderDao.insert(reminder)
+        ReminderScheduler.scheduleNext(reminder)
         Log.i(TAG, "Saved $reminder")
         Log.i(TAG, "Current state: ${ReminderDao.getAll()}")
         finish()
@@ -40,7 +41,6 @@ class AddOrEditActivity : AppCompatActivity() {
     private fun deleteIfPresent() {
         if (oldReminder != null) {
             Log.i(TAG, "Deleted $oldReminder")
-            //            oldReminder?.active = false
             ReminderDao.delete(oldReminder!!)
         }
     }

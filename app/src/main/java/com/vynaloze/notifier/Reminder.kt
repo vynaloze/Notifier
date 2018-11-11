@@ -14,10 +14,14 @@ class Reminder(
     constructor(title: String, desc: String, periods: List<Int>) :
             this(UUID.randomUUID(), title, desc, periods, true)
 
-    val periodsInMilis: List<Long> = periods.map { i -> i * 1000L } //todo  * 60
-    var nextPeriodIndex: Int = 0
+    private val periodsInMilis: List<Long> = periods.map { i -> i * 1000L } //todo  * 60
+    private var nextPeriodIndex: Int = 0
 
-    private val TAG = "Reminder"
+    fun getPeriodAndIncrement(): Long {
+        val i = nextPeriodIndex
+        nextPeriodIndex = if (nextPeriodIndex + 1 < periodsInMilis.size) nextPeriodIndex + 1 else 0
+        return periodsInMilis[i]
+    }
 
     override fun toString(): String {
         return "Reminder(id=$id, title='$title', desc='$desc', periods=$periods, active=$active, periodsInMilis=$periodsInMilis, nextPeriodIndex=$nextPeriodIndex)"

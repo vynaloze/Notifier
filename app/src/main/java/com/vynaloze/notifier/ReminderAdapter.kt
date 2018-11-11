@@ -20,7 +20,10 @@ class ReminderAdapter(val context: Context) : BaseAdapter() {
         rowView.reminder_details.text = "${reminder.desc} - ${reminder.periods}"
         rowView.reminder_switch.isChecked = reminder.active
         rowView.reminder_switch.setOnCheckedChangeListener { _, isChecked ->
-            reminder.active = isChecked
+            reminder.active = isChecked //fixme this state change is not saved in file :/
+            if (isChecked) {
+                ReminderScheduler.scheduleNext(reminder)
+            }
             Log.i("Switched reminder", reminder.toString())
         }
         rowView.reminder_edit.setOnClickListener({ _ ->

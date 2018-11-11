@@ -23,6 +23,11 @@
         <activity
             android:name=".AddOrEditActivity"
             android:windowSoftInputMode="stateVisible" />
+
+        <service
+            android:name=".ReminderJobService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>
